@@ -1,5 +1,5 @@
-from project_name.base import NAME
+from lux_template.base import NAME
 
 
 def test_base():
-    assert NAME == "project_name"
+    assert NAME == "lux_template"
