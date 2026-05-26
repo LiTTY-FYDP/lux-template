@@ -1,0 +1,91 @@
+[tools]
+python = "3.14.5"
+uv = "0.11.16"
+
+[settings]
+python.uv_venv_auto = "create|source"
+
+[env]
+_.python.venv = { path = "{{ env.HOME }}/.virtualenvs/{{ config_root | basename }}", create = true }
+
+[tasks.default]
+description = "Run the full verification suite."
+depends = ["check"]
+
+[tasks.show]
+description = "Show the active Python and uv environment."
+run = [
+    "python -V",
+    "python -m site",
+    "uv --version",
+]
+
+[tasks.install]
+description = "Install the project and development tools."
+run = 'uv pip install -e ".[dev]"'
+
+[tasks.fmt]
+description = "Format code and apply safe lint fixes."
+run = [
+    "ruff check . --fix",
+    "ruff format .",
+]
+
+[tasks.lint]
+description = "Run Ruff lint and formatting checks."
+run = [
+    "ruff check .",
+    "ruff format --check .",
+]
+
+[tasks.typecheck]
+description = "Run ty type checking."
+run = "ty check"
+
+[tasks.test]
+description = "Run tests with coverage."
+depends = ["lint", "typecheck"]
+run = "pytest"
+
+[tasks.check]
+description = "Run linting, type checking, and tests."
+depends = ["test"]
+
+[tasks.clean]
+description = "Clean generated local artifacts."
+run = [
+    "rm -rf .cache .pytest_cache .ruff_cache build dist htmlcov site coverage.xml",
+    "rm -rf .coverage .coverage.* *.egg-info",
+    "find . -name '*.pyc' -delete",
+    "find . -name '__pycache__' -type d -prune -exec rm -rf {} +",
+]
+
+[tasks.docs]
+description = "Build the documentation site."
+run = "mkdocs build"
+
+[tasks.build]
+description = "Build source and wheel distributions."
+run = [
+    "rm -rf build dist *.egg-info",
+    "find . -name '*.pyc' -delete",
+    "find . -name '__pycache__' -type d -prune -exec rm -rf {} +",
+    "uv build",
+]
+
+[tasks.release]
+description = "Create a version tag and push it."
+shell = "bash -euo pipefail -c"
+run = """
+read -r -p "Version? (provide the next x.y.z semver): " TAG
+printf "%s\\n" "${TAG}" > lux_template/VERSION
+gitchangelog > HISTORY.md
+git add lux_template/VERSION HISTORY.md
+git commit -m "chore(release): version ${TAG}"
+git tag "${TAG}"
+git push -u origin HEAD --tags
+"""
+
+[tasks.init]
+description = "Initialize the project from an application template."
+run = "./.github/init.sh"

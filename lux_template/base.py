@@ -1,17 +1,5 @@
-"""
-lux_template base module.
+"""Core constants for lux_template."""
 
-This is the principal module of the lux_template project.
-here you put your main classes and objects.
+from typing import Final
 
-Be creative! do whatever you want!
-
-If you want to replace this with a Flask application run:
-
-    $ make init
-
-and then choose `flask` as template.
-"""
-
-# example constant variable
-NAME = "lux_template"
+NAME: Final = "lux_template"
