@@ -1,198 +1,61 @@
 # About this template
 
-Hi, I created this template to help you get started with a new project.
-
-I have created and maintained a number of python libraries, applications and 
-frameworks and during those years I have learned a lot about how to create a 
-project structure and how to structure a project to be as modular and simple 
-as possible.
-
-Some decisions I have made while creating this template are:
-
- - Create a project structure that is as modular as possible.
- - Keep it simple and easy to maintain.
- - Allow for a lot of flexibility and customizability.
- - Low dependency (this template doesn't add dependencies)
+This template provides a small, modern Python project structure with low runtime dependency pressure and strict development checks.
 
 ## Structure
 
-Lets take a look at the structure of this template:
-
 ```text
-├── Containerfile            # The file to build a container using buildah or docker
-├── CONTRIBUTING.md          # Onboarding instructions for new contributors
-├── docs                     # Documentation site (add more .md files here)
-│   └── index.md             # The index page for the docs site
-├── .github                  # Github metadata for repository
-│   ├── release_message.sh   # A script to generate a release message
-│   └── workflows            # The CI pipeline for Github Actions
-├── .gitignore               # A list of files to ignore when pushing to Github
-├── HISTORY.md               # Auto generated list of changes to the project
-├── LICENSE                  # The license for the project
-├── Makefile                 # A collection of utilities to manage the project
-├── MANIFEST.in              # A list of files to include in a package
-├── mkdocs.yml               # Configuration for documentation site
-├── lux_template             # The main python package for the project
-│   ├── base.py              # The base module for the project
-│   ├── __init__.py          # This tells Python that this is a package
-│   ├── __main__.py          # The entry point for the project
-│   └── VERSION              # The version for the project is kept in a static file
-├── README.md                # The main readme for the project
-├── setup.py                 # The setup.py file for installing and packaging the project
-├── requirements.txt         # An empty file to hold the requirements for the project
-├── requirements-test.txt    # List of requirements for testing and devlopment
-├── setup.py                 # The setup.py file for installing and packaging the project
-└── tests                    # Unit tests for the project (add mote tests files here)
-    ├── conftest.py          # Configuration, hooks and fixtures for pytest
-    ├── __init__.py          # This tells Python that this is a test package
-    └── test_base.py         # The base test case for the project
+├── Containerfile            # Container image for the project
+├── CONTRIBUTING.md          # Contributor workflow
+├── docs                     # Documentation site
+├── .github                  # GitHub metadata and workflows
+├── .gitignore               # Local and generated files to ignore
+├── HISTORY.md               # Project changelog
+├── LICENSE                  # Project license
+├── MANIFEST.in              # Source distribution file manifest
+├── mise.toml                # Python, uv, virtual environment, and tasks
+├── mkdocs.yml               # MkDocs configuration
+├── pyproject.toml           # Packaging and tool configuration
+├── lux_template             # Main Python package
+│   ├── base.py              # Core package module
+│   ├── __init__.py          # Public package interface
+│   ├── __main__.py          # Module execution entry point
+│   └── VERSION              # Static package version
+├── README.md                # Project overview
+└── tests                    # Unit tests
+    ├── conftest.py          # Pytest fixtures
+    ├── __init__.py          # Test package marker
+    └── test_base.py         # Base tests
 ```
 
-## FAQ
+## Tooling decisions
 
-Frequent asked questions.
+### Why pyproject.toml?
 
-### Why this template is not using [Poetry](https://python-poetry.org/) ?
+`pyproject.toml` is the modern home for Python package metadata and tool configuration. This template uses setuptools through PEP 517/518 build metadata, keeps the package version in `lux_template/VERSION`, and configures pytest, coverage, Ruff, and ty in one place.
 
-I really like Poetry and I think it is a great tool to manage your python projects,
-if you want to switch to poetry, you can run `make switch-to-poetry`.
+### Why mise?
 
-But for this template I wanted to keep it simple.
-
-Setuptools is the most simple and well supported way of packaging a Python project,
-it doesn't require extra dependencies and is the easiest way to install the project.
-
-Also, poetry doesn't have a good support for installing projects in development mode yet.
-
-### Why the `requirements.txt` is empty ?
-
-This template is a low dependency project, so it doesn't have any extra dependencies.
-You can add new dependencies as you will or you can use the `make init` command to
-generate a `requirements.txt` file based on the template you choose `flask, fastapi, click etc`.
-
-### Why there is a `requirements-test.txt` file ?
-
-This file lists all the requirements for testing and development,
-I think the development environment and testing environment should be as similar as possible.
-
-Except those tools that are up to the developer choice (like ipython, ipdb etc).
-
-### Why the template doesn't have a `pyproject.toml` file ?
-
-It is possible to run `pip install https://github.com/name/repo/tarball/main` and
-have pip to download the package direcly from Git repo.
-
-For that to work you need to have a `setup.py` file, and `pyproject.toml` is not
-supported for that kind of installation.
-
-I think it is easier for example you want to install specific branch or tag you can
-do `pip install https://github.com/name/repo/tarball/{TAG|REVISON|COMMIT}`
-
-People automating CI for your project will be grateful for having a setup.py file
-
-### Why isn't this template made as a cookiecutter template?
-
-I really like [cookiecutter](https://github.com/cookiecutter/cookiecutter) and it is a great way to create new projects,
-but for this template I wanted to use the Github `Use this template` button,
-to use this template doesn't require to install extra tooling such as cookiecutter.
-
-Just click on [Use this template](https://github.com/rochacbruno/python-project-template/generate) and you are good to go.
-
-The substituions are done using github actions and a simple sed script.
-
-### Why `VERSION` is kept in a static plain text file?
-
-I used to have my version inside my main module in a `__version__` variable, then
-I had to do some tricks to read that version variable inside the setuptools 
-`setup.py` file because that would be available only after the installation.
-
-I decided to keep the version in a static file because it is easier to read from
-wherever I want without the need to install the package.
-
-e.g: `cat lux_template/VERSION` will get the project version without harming
-with module imports or anything else, it is useful for CI, logs and debugging.
-
-### Why to include `tests`, `history` and `Containerfile` as part of the release?
-
-The `MANIFEST.in` file is used to include the files in the release, once the 
-project is released to PyPI all the files listed on MANIFEST.in will be included
-even if the files are static or not related to Python.
-
-Some build systems such as RPM, DEB, AUR for some Linux distributions, and also
-internal repackaging systems tends to run the tests before the packaging is performed.
-
-The Containerfile can be useful to provide a safer execution environment for 
-the project when running on a testing environment.
-
-I added those files to make it easier for packaging in different formats.
-
-### Why conftest includes a go_to_tmpdir fixture?
-
-When your project deals with file system operations, it is a good idea to use
-a fixture to create a temporary directory and then remove it after the test.
-
-Before executing each test pytest will create a temporary directory and will
-change the working directory to that path and run the test.
-
-So the test can create temporary artifacts isolated from other tests.
-
-After the execution Pytest will remove the temporary directory.
-
-### Why this template is not using [pre-commit](https://pre-commit.com/) ?
-
-pre-commit is an excellent tool to automate checks and formatting on your code.
-
-However I figured out that pre-commit adds extra dependency and it an entry barrier
-for new contributors.
-
-Having the linting, checks and formatting as simple commands on the [Makefile](Makefile)
-makes it easier to undestand and change.
-
-Once the project is bigger and complex, having pre-commit as a dependency can be a good idea.
-
-### Why the CLI is not using click?
-
-I wanted to provide a simple template for a CLI application on the project main entry point
-click and typer are great alternatives but are external dependencies and this template
-doesn't add dependencies besides those used for development.
-
-### Why this doesn't provide a full example of application using Flask or Django?
-
-as I said before, I want it to be simple and multipurpose, so I decided to not include
-external dependencies and programming design decisions.
-
-It is up to you to decide if you want to use Flask or Django and to create your application
-the way you think is best.
-
-This template provides utilities in the Makefile to make it easier to you can run:
+mise pins Python 3.14.5 and uv for the project, creates the virtual environment, and replaces ad hoc shell targets with discoverable tasks.
 
 ```bash
-$ make init 
-Which template do you want to apply? [flask, fastapi, click, typer]? > flask
-Generating a new project with Flask ...
+mise install
+mise run install
+mise run check
 ```
 
-Then the above will download the Flask template and apply it to the project.
+### Why Ruff and ty?
 
-## The Makefile
+Ruff replaces the older Black, isort, and Flake8 stack with one formatter and linter. ty provides fast type checking. Both are configured with strict defaults so new projects start from a high signal baseline.
 
-All the utilities for the template and project are on the Makefile
+### Why keep VERSION as a file?
 
-```bash
-❯ make
-Usage: make <target>
+The package version is readable without importing the package. That keeps release automation and external packaging simple while still letting setuptools read the version dynamically during builds.
 
-Targets:
-help:             ## Show the help.
-install:          ## Install the project in dev mode.
-fmt:              ## Format code using black & isort.
-lint:             ## Run pep8, black, mypy linters.
-test: lint        ## Run tests and generate coverage report.
-watch:            ## Run tests on every change.
-clean:            ## Clean unused files.
-virtualenv:       ## Create a virtual environment.
-release:          ## Create a new tag for release.
-docs:             ## Build the documentation.
-switch-to-poetry: ## Switch to poetry package manager.
-init:             ## Initialize the project based on an application template.
-```
+### Why keep MANIFEST.in?
+
+The manifest keeps source distributions explicit for downstream packagers that run tests, inspect the changelog, or rebuild container images from the source release.
+
+### Why no pre-commit by default?
+
+The default workflow stays centered on mise tasks to keep setup small. Projects that want pre-commit can add it later and delegate hooks to the same Ruff, ty, and pytest commands.

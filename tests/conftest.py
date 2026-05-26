@@ -1,14 +1,20 @@
-import sys
+"""Pytest fixtures for lux_template."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-# each test runs on cwd to its temp dir
+
 @pytest.fixture(autouse=True)
-def go_to_tmpdir(request):
-    # Get the fixture dynamically by its name.
-    tmpdir = request.getfixturevalue("tmpdir")
-    # ensure local test created packages can be imported
-    sys.path.insert(0, str(tmpdir))
-    # Chdir only for the duration of the test.
-    with tmpdir.as_cwd():
-        yield
+def go_to_tmpdir(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Run each test from an isolated temporary directory."""
+    monkeypatch.syspath_prepend(str(tmp_path))
+    monkeypatch.chdir(tmp_path)
