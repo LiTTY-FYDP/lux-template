@@ -65,11 +65,28 @@ docstring-code-format = true
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
+    # Ruff formatter manages trailing commas.
     "COM812",
+    # Template consumers decide their own copyright policy.
     "CPY001",
+    # Magic methods are often clearer without docstrings.
+    "D105",
+    # Google-style docstrings use no blank line before the class body.
     "D203",
+    # Google-style docstrings start summaries on the first line.
     "D213",
+    # Return prose is redundant for obvious returns in small functions.
+    "DOC201",
+    # Yield prose is redundant for obvious generator values.
+    "DOC402",
+    # TODOs are acceptable without requiring a formal tracker link.
+    "FIX002",
+    # Ruff formatter manages adjacent string literal layout.
     "ISC001",
+    # TODO ownership belongs to project workflow, not the template.
+    "TD002",
+    # TODO issue links are optional for early-stage projects.
+    "TD003",
 ]
 fixable = ["ALL"]
 unfixable = []
@@ -83,6 +100,7 @@ strict = true
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
+    # Pytest tests use plain asserts for readable failures.
     "S101",
 ]
 
