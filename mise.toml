@@ -3,10 +3,14 @@ python = "3.14.5"
 uv = "0.11.16"
 
 [settings]
-python.uv_venv_auto = "create|source"
+# Disable Mise auto-venv creation, which can recreate a checkout-local .venv.
+python.uv_venv_auto = false
 
 [env]
-_.python.venv = { path = "{{ env.HOME }}/.virtualenvs/{{ config_root | basename }}", create = true }
+# Keep uv project environments outside the checkout so repository moves do not relocate them.
+UV_PROJECT_ENVIRONMENT = "{{ env.HOME }}/.virtualenvs/{{ config_root | basename }}"
+# Create and activate a seeded central environment so Python and pip both resolve inside it.
+_.python.venv = { path = "{{ env.HOME }}/.virtualenvs/{{ config_root | basename }}", create = true, uv_create_args = ["--seed"] }
 
 [tasks.default]
 description = "Run the full verification suite."
