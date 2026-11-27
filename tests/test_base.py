@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
+import pytest
 from lux_template.base import NAME
 from lux_template.cli import main
 
-if TYPE_CHECKING:
-    import pytest
+pytestmark = pytest.mark.usefixtures("go_to_tmpdir")
 
 EXPECTED_NAME = "lux_template"
 EXPECTED_OUTPUT = "This will do something\n"
