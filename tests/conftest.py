@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def go_to_tmpdir(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
